@@ -12,7 +12,8 @@
 | Modelos | OpenRouter: `google/gemma-4-31b-it:free` · Anthropic: `claude-haiku-4-5` (opção mais caprichada: `claude-sonnet-5-5`) · OpenAI: `gpt-5-mini` (confirmar que aparece na sua conta) |
 | Tamanho máximo da resposta | 1024 tokens (mais ou menos uma página) |
 | Hardware do Space | **ZeroGPU** (ver restrições na seção 2.3) |
-| Pendentes (usaremos o padrão abaixo até você dizer outra coisa) | Usuário e nome do Space no Hugging Face → ficam numa variável do GitHub (`HF_SPACE_ID`), sem estar escritos no código. Nome/descrição/cores/logo → padrões da seção 1. Ferramentas → Python + Gradio + pytest + gitleaks. Deploy a partir da branch `main`. |
+| Space no Hugging Face | Usuário `Erickdds`, Space `agente-personalizado` → `HF_SPACE_ID = Erickdds/agente-personalizado` (guardado como variável do GitHub, não no código). Página: https://huggingface.co/spaces/Erickdds/agente-personalizado · Link direto do app: https://erickdds-agente-personalizado.hf.space |
+| Pendentes (usaremos o padrão abaixo até você dizer outra coisa) | Nome/descrição/cores/logo → padrões da seção 1. Ferramentas → Python + Gradio + pytest + gitleaks. Deploy a partir da branch `main`. |
 
 ---
 
@@ -230,13 +231,13 @@ manual       ─┘     1. baixa o código                                  1. e
 
 **No Hugging Face**
 1. Criar a conta e assinar o **PRO** (necessário para ZeroGPU; se não quiser pagar, use *CPU basic*).
-2. Criar o Space: *New Space* → escolher um nome → SDK **Gradio** → hardware **ZeroGPU** → visibilidade **Public**.
+2. Criar o Space: *New Space* → owner `Erickdds`, nome `agente-personalizado` → SDK **Gradio** → hardware **ZeroGPU** → visibilidade **Public**.
 3. No Space: *Settings → Variables and secrets → New secret*. Cadastrar **pelo menos uma**: `OPENROUTER_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`.
 4. Criar um token de acesso: *Settings (do seu perfil) → Access Tokens → New token* → tipo **Fine-grained**, com permissão de **escrita só neste Space**. Copiar o token, que começa com `hf_`.
 
 **No GitHub** (*repositório → Settings*)
 5. *Secrets and variables → Actions → New repository secret*: nome `HF_TOKEN`, valor = o token do passo 4.
-6. *Secrets and variables → Actions → Variables → New repository variable*: nome `HF_SPACE_ID`, valor `seu-usuario/nome-do-space`.
+6. *Secrets and variables → Actions → Variables → New repository variable*: nome `HF_SPACE_ID`, valor `Erickdds/agente-personalizado`.
 7. *Actions → General*: confirmar que as Actions estão habilitadas.
 8. (Recomendado) *Branches → Add rule* para a `main`: exigir que o job "verificar" passe antes de aceitar um merge.
 
@@ -249,7 +250,7 @@ manual       ─┘     1. baixa o código                                  1. e
 
 ## 8. Critérios de aceite
 
-- [ ] Abro o link do Space e vejo a logo, o nome e a descrição no topo, com o fundo nas minhas cores.
+- [ ] Abro https://huggingface.co/spaces/Erickdds/agente-personalizado e vejo a logo, o nome e a descrição no topo, com o fundo nas minhas cores.
 - [ ] Todos os textos da tela estão em português.
 - [ ] Clico numa pergunta de exemplo e recebo uma resposta didática, que aparece aos poucos.
 - [ ] Com **só** a chave do OpenRouter cadastrada, o chat funciona.
@@ -299,7 +300,7 @@ manual       ─┘     1. baixa o código                                  1. e
 | OpenAI: **resposta vazia** com GPT-5 mini | O modelo "pensou" e gastou todos os tokens antes de escrever | O adaptador usa esforço de raciocínio baixo. Se persistir, aumente `max_tokens` |
 | OpenAI: **429 "insufficient_quota"** | Sem crédito (não é limite de velocidade) | Colocar crédito em *platform.openai.com → Billing* |
 | GitHub Actions: **erro 401/403 no passo "publicar"** | `HF_TOKEN` ausente, expirado ou sem permissão de escrita no Space | Gerar um novo token *fine-grained* com escrita no Space e atualizar o secret `HF_TOKEN` |
-| GitHub Actions: **"Repository not found"** | `HF_SPACE_ID` errado | Usar o formato `usuario/nome-do-space`, igual ao link do Space |
+| GitHub Actions: **"Repository not found"** | `HF_SPACE_ID` errado | Usar exatamente `Erickdds/agente-personalizado` (maiúsculas e minúsculas importam no usuário) |
 | GitHub Actions: **validação falhou** | Erro no `config.yaml` | Ler a mensagem no *Job summary*: ela diz o campo e como corrigir |
 | GitHub Actions: **gitleaks falhou** | Alguma chave (ou algo parecido com uma) foi para o código | **Revogar a chave no site do provedor imediatamente** (ela já está no histórico do Git), remover do arquivo e cadastrar a nova só nos secrets do Space |
 | Erro de YAML: **"mapping values are not allowed"** | Indentação errada, ou texto com `:` sem aspas | Usar 2 espaços (nunca tab) e colocar textos entre aspas |
