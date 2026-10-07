@@ -11,6 +11,8 @@
 | Provedores e ordem | 1º OpenRouter → 2º Anthropic → 3º OpenAI |
 | Modelos | OpenRouter: `google/gemma-4-31b-it:free` · Anthropic: `claude-haiku-4-5` (opção mais caprichada: `claude-sonnet-5-5`) · OpenAI: `gpt-5-mini` (confirmar que aparece na sua conta) |
 | Tamanho máximo da resposta | 1024 tokens (mais ou menos uma página) |
+| Streaming | Ligado: a resposta aparece palavra por palavra |
+| Tamanho máximo da pergunta | 2000 caracteres (cerca de meia página), configurável. Protege o custo num link público |
 | Hardware do Space | **ZeroGPU** (ver restrições na seção 2.3) |
 | Space no Hugging Face | Usuário `Erickdds`, Space `agente-personalizado` → `HF_SPACE_ID = Erickdds/agente-personalizado` (guardado como variável do GitHub, não no código). Página: https://huggingface.co/spaces/Erickdds/agente-personalizado · Link direto do app: https://erickdds-agente-personalizado.hf.space |
 | Pendentes (usaremos o padrão abaixo até você dizer outra coisa) | Nome/descrição/cores/logo → padrões da seção 1. Ferramentas → Python + Gradio + pytest + gitleaks. Deploy a partir da branch `main`. |
@@ -103,7 +105,7 @@ O app aceita **três tipos de chave**. Basta **uma**, não é preciso ter as tr�
 
 ### Configuração
 - **RF1.** Toda a personalização fica em um único arquivo, `config.yaml`, na raiz do repositório.
-- **RF2.** O `config.yaml` contém, no mínimo: nome e descrição do assistente; cor primária e cor secundária (formato `#RRGGBB`); caminho e altura da logo; lista ordenada de provedores (cada um com `nome` e `modelo`); `max_tokens`; instruções de comportamento (*system prompt*); de 1 a 6 perguntas de exemplo.
+- **RF2.** O `config.yaml` contém, no mínimo: nome e descrição do assistente; cor primária e cor secundária (formato `#RRGGBB`); caminho e altura da logo; lista ordenada de provedores (cada um com `nome` e `modelo`); `max_tokens`; `max_caracteres_pergunta`; instruções de comportamento (*system prompt*); de 1 a 6 perguntas de exemplo.
 - **RF3.** Os nomes de provedor aceitos são exatamente `openrouter`, `anthropic` e `openai`. Cada um pode aparecer no máximo uma vez.
 - **RF4.** O `config.yaml` **nunca** contém chaves de API. Se houver um campo com nome parecido com `api_key`, `token` ou `secret`, a validação falha.
 
@@ -119,6 +121,7 @@ aparencia:
   logo_altura_px: 80
 ia:
   max_tokens: 1024
+  max_caracteres_pergunta: 2000   # perguntas maiores são recusadas
   provedores:            # ordem = preferência
     - nome: openrouter
       modelo: "google/gemma-4-31b-it:free"
@@ -136,7 +139,7 @@ exemplos:
 
 ### Validação
 - **RF5.** Um comando de validação confere o `config.yaml` e, para cada erro, mostra **em português** o campo, o problema e como corrigir. Exemplo: `aparencia.cor_primaria: "#12345G" não é uma cor válida. Use o formato #RRGGBB, por exemplo #0B3D91.`
-- **RF6.** A validação falha se: um campo obrigatório estiver vazio; uma cor for inválida; o arquivo da logo não existir; a altura da logo estiver fora de 24 a 300 px; `max_tokens` estiver fora de 64 a 8192; a lista de provedores estiver vazia ou tiver um nome desconhecido ou repetido; um modelo estiver vazio; houver menos de 1 ou mais de 6 exemplos.
+- **RF6.** A validação falha se: um campo obrigatório estiver vazio; uma cor for inválida; o arquivo da logo não existir; a altura da logo estiver fora de 24 a 300 px; `max_tokens` estiver fora de 64 a 8192; `max_caracteres_pergunta` estiver fora de 100 a 10000; a lista de provedores estiver vazia ou tiver um nome desconhecido ou repetido; um modelo estiver vazio; houver menos de 1 ou mais de 6 exemplos.
 - **RF7.** A validação mostra **todos** os erros de uma vez, não só o primeiro.
 
 ### Provedores e troca automática
@@ -153,6 +156,10 @@ exemplos:
 - **RF14.** Os motivos são traduzidos para português simples (limite de uso, sem crédito, chave inválida, modelo não encontrado, fora do ar, tempo esgotado, resposta vazia, erro desconhecido) e **nunca** mostram a chave nem trechos dela.
 - **RF15.** Se **nenhuma** chave estiver cadastrada, o app **abre mesmo assim** e mostra, no lugar da resposta, uma orientação: "Nenhuma chave de API cadastrada. Cadastre pelo menos uma nos *Secrets* do Space."
 - **RF16.** Os logs do Space (a tela de registro técnico) mostram qual provedor respondeu cada mensagem e por que os outros falharam, sem mostrar chaves.
+
+### Proteção de custo
+- **RF27.** Se a pergunta tiver mais caracteres que `max_caracteres_pergunta` (padrão 2000), o app **não chama nenhuma IA** e responde no chat: "Sua pergunta tem X caracteres; o limite é 2000. Resuma e envie de novo." Perguntas vazias ou só com espaços também são ignoradas sem chamar a IA.
+- **RF28.** O campo de digitação mostra o limite (por exemplo, "Digite sua pergunta (até 2000 caracteres)").
 
 ### Interface
 - **RF17.** O topo da página mostra a logo (na altura configurada), o nome e a descrição.
@@ -180,7 +187,7 @@ exemplos:
 - **T3.** Campo obrigatório vazio (nome, descrição, instruções) gera erro com o nome do campo.
 - **T4.** Logo apontando para um arquivo inexistente gera erro.
 - **T5.** Provedor desconhecido (`gemini`), provedor repetido ou lista vazia geram erro.
-- **T6.** Zero exemplos ou mais de 6 geram erro. `max_tokens` fora de 64 a 8192 gera erro.
+- **T6.** Zero exemplos ou mais de 6 geram erro. `max_tokens` fora de 64 a 8192 gera erro. `max_caracteres_pergunta` fora de 100 a 10000 gera erro.
 - **T7.** Uma configuração com vários erros mostra todos de uma vez (RF7).
 - **T8.** Um campo como `api_key: ...` dentro do `config.yaml` gera erro (RF4).
 
@@ -195,6 +202,9 @@ exemplos:
 - **T16.** O adaptador do OpenRouter cria o cliente `openai` com `base_url` `https://openrouter.ai/api/v1`. O adaptador Anthropic manda as instruções no campo `system`.
 - **T17.** Nenhuma mensagem de erro ou linha de log contém o valor da chave (teste com uma chave falsa conhecida).
 - **T18.** A ordem de tentativa segue exatamente a ordem do `config.yaml`. Se a ordem do arquivo mudar, a ordem das tentativas muda junto.
+
+### Proteção de custo
+- **T24.** Uma pergunta com 1 caractere a mais que o limite recebe a mensagem do RF27 e **nenhum** provedor (fake) é chamado; uma pergunta exatamente no limite é enviada normalmente; pergunta vazia não chama provedor.
 
 ### Interface e empacotamento
 - **T19.** O app monta a interface (sem abrir o servidor) com a configuração padrão e sem nenhuma chave, sem dar erro.
@@ -252,6 +262,7 @@ manual       ─┘     1. baixa o código                                  1. e
 
 - [ ] Abro https://huggingface.co/spaces/Erickdds/agente-personalizado e vejo a logo, o nome e a descrição no topo, com o fundo nas minhas cores.
 - [ ] Todos os textos da tela estão em português.
+- [ ] Colo um texto com mais de 2000 caracteres e o chat pede para resumir, sem chamar a IA.
 - [ ] Clico numa pergunta de exemplo e recebo uma resposta didática, que aparece aos poucos.
 - [ ] Com **só** a chave do OpenRouter cadastrada, o chat funciona.
 - [ ] Com **só** a chave da Anthropic cadastrada, o chat funciona.
@@ -276,7 +287,7 @@ manual       ─┘     1. baixa o código                                  1. e
 |---|---|---|---|
 | **1** | **Esqueleto do projeto** | Pastas (`src/`, `tests/`, `assets/`, `scripts/`), `config.yaml` com os padrões, `assets/logo.svg`, `requirements.txt`, `README.md` com o cabeçalho do Space, `.gitignore` | Ver os arquivos no GitHub e conferir o `config.yaml` |
 | **2** | **Leitura e validação da configuração** | Módulo de configuração + comando `python scripts/validar_config.py` | Rodar o comando, quebrar uma cor de propósito e ver a mensagem (T1–T8) |
-| **3** | **Adaptadores dos 3 provedores e a troca automática** | Um adaptador por provedor + o "orquestrador" do fallback + tradução dos erros | `pytest` com os fakes (T9–T18). Opcional: um teste manual com uma chave real |
+| **3** | **Adaptadores dos 3 provedores e a troca automática** | Um adaptador por provedor + o "orquestrador" do fallback + tradução dos erros | `pytest` com os fakes (T9–T18, T24). Opcional: um teste manual com uma chave real |
 | **4** | **Interface Gradio** | `app.py` com cabeçalho, cores, exemplos, streaming, textos em português e compatibilidade com ZeroGPU | `python app.py`, abrir no navegador (T19–T22) |
 | **5** | **Proteção contra chaves vazadas** | Configuração do gitleaks + teste do detector | Rodar o gitleaks localmente; o teste com chave falsa precisa ser detectado (T23) |
 | **6** | **Pipeline do GitHub Actions** | `.github/workflows/deploy.yml` (verificar → publicar) | Abrir um PR e ver o job "verificar" ficar verde |
