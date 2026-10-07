@@ -27,6 +27,15 @@ Edite só o arquivo [`config.yaml`](config.yaml), pelo próprio site do GitHub (
 Lá você muda nome, descrição, cores, logo, provedores de IA, tamanho das respostas,
 instruções de comportamento e perguntas de exemplo.
 
+### Conferir se a configuração está certa
+
+```bash
+python scripts/validar_config.py
+```
+
+Se houver erro, ele mostra cada campo com problema e como corrigir. Nas listas, a contagem
+começa em 1: `ia.provedores[2].modelo` é o modelo do **segundo** provedor.
+
 ## Chaves de API
 
 O app funciona com **qualquer uma** destas chaves (não precisa das três):
@@ -58,5 +67,6 @@ requirements-dev.txt  ← dependências extras para testar no computador
 python -m venv .venv
 source .venv/bin/activate        # no Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
+python scripts/validar_config.py
 pytest
 ```
