@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Ambientes virtuais
+.venv/
+venv/
+
+# Segredos locais: NUNCA envie para o GitHub
+.env
+.env.*
+
+# Gradio / sistema
+.gradio/
+flagged/
+.DS_Store

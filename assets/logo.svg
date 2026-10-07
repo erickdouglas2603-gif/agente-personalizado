@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Logo Professor de Dados &amp; IA">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B3D91"/>
+      <stop offset="1" stop-color="#6A1B9A"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#g)"/>
+  <!-- capelo (chapéu de formatura) -->
+  <polygon points="60,22 98,38 60,54 22,38" fill="#FFFFFF"/>
+  <path d="M38 45 v12 c0 6 44 6 44 0 v-12 l-22 9 z" fill="#E3E8F5"/>
+  <line x1="94" y1="40" x2="94" y2="58" stroke="#FFFFFF" stroke-width="3"/>
+  <!-- rede de dados -->
+  <g stroke="#FFFFFF" stroke-width="3" opacity="0.9">
+    <line x1="38" y1="88" x2="60" y2="74"/>
+    <line x1="60" y1="74" x2="82" y2="88"/>
+    <line x1="38" y1="88" x2="82" y2="88"/>
+  </g>
+  <g fill="#FFFFFF">
+    <circle cx="38" cy="88" r="6"/>
+    <circle cx="60" cy="74" r="6"/>
+    <circle cx="82" cy="88" r="6"/>
+  </g>
+</svg>

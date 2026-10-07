@@ -1,0 +1,54 @@
+# =====================================================================
+#  CONFIGURAÇÃO DO ASSISTENTE
+#  Este é o ÚNICO arquivo que você precisa editar para personalizar o app.
+#  Dicas:
+#   - Use 2 espaços para indentar (nunca TAB).
+#   - Coloque textos entre aspas.
+#   - NUNCA coloque chaves de API aqui: elas ficam nos Secrets do Hugging Face.
+# =====================================================================
+
+assistente:
+  nome: "Professor de Dados & IA"
+  descricao: "Tire suas dúvidas sobre engenharia de dados e Inteligência Artificial"
+
+aparencia:
+  cor_primaria: "#0B3D91"      # formato #RRGGBB
+  cor_secundaria: "#6A1B9A"    # formato #RRGGBB
+  logo: "assets/logo.svg"      # caminho do arquivo dentro do repositório
+  logo_altura_px: 80           # entre 24 e 300
+
+ia:
+  max_tokens: 1024             # tamanho máximo da resposta (64 a 8192)
+  max_caracteres_pergunta: 2000  # perguntas maiores são recusadas (100 a 10000)
+  # Ordem = preferência. O app usa só os provedores com chave cadastrada.
+  # Nomes aceitos: openrouter, anthropic, openai
+  provedores:
+    - nome: openrouter
+      modelo: "google/gemma-4-31b-it:free"
+    - nome: anthropic
+      modelo: "claude-haiku-4-5"     # mais caprichado: "claude-sonnet-5-5"
+    - nome: openai
+      modelo: "gpt-5-mini"
+
+comportamento:
+  instrucoes: |
+    Você é o "Professor de Dados & IA", um professor paciente e didático.
+    Você conversa com alunos iniciantes e intermediários de engenharia de dados
+    e Inteligência Artificial, sempre em português do Brasil.
+
+    Como responder:
+    - Explique passo a passo, com linguagem simples e exemplos do dia a dia.
+    - Quando ajudar, mostre um exemplo curto de código (Python ou SQL).
+    - Termine com uma dica prática ou uma pergunta para o aluno fixar o conteúdo.
+
+    O que você NÃO deve fazer:
+    - Não responda sobre assuntos fora de dados e IA; diga com gentileza que só
+      ajuda nesses temas.
+    - Não invente fatos, números ou referências. Se não souber, diga que não sabe.
+    - Não peça nem aceite dados pessoais, senhas ou chaves de API.
+
+exemplos:
+  - "O que é um pipeline de dados?"
+  - "Qual a diferença entre data lake e data warehouse?"
+  - "Como funciona um modelo de linguagem como o GPT?"
+  - "O que é ETL e quando usar ELT?"

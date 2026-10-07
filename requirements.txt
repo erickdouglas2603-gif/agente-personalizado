@@ -1,0 +1,7 @@
+# Dependências que o Space instala para rodar o app.
+# O Gradio NÃO entra aqui: a versão dele vem do campo sdk_version do README.md.
+openai>=3.26,<4
+anthropic>=1.11,<2
+pyyaml>=6.0,<7
+pydantic>=2.13,<3
+spaces>=0.51
